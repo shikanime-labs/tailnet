@@ -21,9 +21,9 @@ stored in GitHub.
 
    | Variable                    | Value                               |
    | --------------------------- | ----------------------------------- |
-   | `TAILSCALE_TAILNET`         | tailnet name from the admin console  |
-   | `TAILSCALE_OAUTH_CLIENT_ID` | federated identity client ID         |
-   | `TAILSCALE_AUDIENCE`        | federated identity audience          |
+   | `TAILSCALE_TAILNET`         | tailnet name from the admin console |
+   | `TAILSCALE_OAUTH_CLIENT_ID` | federated identity client ID        |
+   | `TAILSCALE_AUDIENCE`        | federated identity audience         |
 
 ## Development
 

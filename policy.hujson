@@ -1,64 +1,279 @@
-// Tailnet policy file for taila659a.ts.net, applied by CI on push to main.
-//
-// Seeded from the live tag inventory observed with `tailscale status --json`.
-// Replace it with the export from https://login.tailscale.com/admin/acls/file
-// before the first merge to main: `apply` overwrites control unconditionally.
+// Tailscale policy file — source of truth for the shikanime tailnet.
+// Applied to control by CI (gitops-acl-action). Editing the admin console
+// directly makes the next run warn; always re-export before touching this.
 {
-	"tagOwners": {
-		"tag:aperture":     ["autogroup:admin"],
-		"tag:automata":     ["autogroup:admin"],
-		"tag:bittorrent":   ["autogroup:admin"],
-		"tag:ftp":          ["autogroup:admin"],
-		"tag:git":          ["autogroup:admin"],
-		"tag:k8s-node":     ["autogroup:admin"],
-		"tag:k8s-operator": ["autogroup:admin"],
-		"tag:machine":      ["autogroup:admin"],
-		"tag:server":       ["autogroup:admin"],
-		"tag:web":          ["autogroup:admin", "tag:k8s-operator"],
-		"tag:workstation":  ["autogroup:admin"],
+	"autoApprovers": {
+		"routes": {
+			"10.244.0.0/16": ["tag:k8s-node"],
+			"fd00::/108":    ["tag:k8s-node"],
+		},
+
+		"exitNode": ["tag:server"],
+		"services": {"svc:nishir": ["tag:k8s-node"]},
 	},
 
-	"acls": [
+	"grants": [
 		{
-			"action": "accept",
-			"src":    ["autogroup:member"],
-			"dst":    ["*"],
-			"ip":     ["*"],
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["tag:k8s-operator"],
+			"app": {
+				"tailscale.com/cap/kubernetes": [
+					{"impersonate": {"groups": ["system:masters"]}},
+				],
+			},
 		},
 		{
-			// Tagged nodes reach each other: k8s nodes, operator proxies,
-			// serve targets.
-			"action": "accept",
-			"src":    ["tag:k8s-node", "tag:k8s-operator", "tag:machine", "tag:server"],
-			"dst": [
-				"tag:k8s-node",
-				"tag:k8s-operator",
-				"tag:machine",
-				"tag:server",
-				"tag:web",
-			],
-			"ip": ["*"],
+			"src": ["autogroup:member"],
+			"dst": ["autogroup:self"],
+
+			"app": {
+				"tailscale.com/cap/drive": [
+					{
+						"shares": ["*"],
+						"access": "rw",
+					},
+				],
+			},
+		},
+		{
+			"src": ["autogroup:member", "tag:machine"],
+			"dst": ["autogroup:member", "tag:machine"],
+
+			"app": {
+				"tailscale.com/cap/drive": [
+					{
+						"shares": ["*"],
+						"access": "ro",
+					},
+				],
+			},
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["autogroup:member", "tag:machine"],
+
+			"app": {
+				"tailscale.com/cap/drive": [
+					{
+						"shares": ["*"],
+						"access": "rw",
+					},
+				],
+			},
+		},
+		{
+			"src": ["autogroup:member", "tag:machine"],
+			"dst": ["autogroup:internet"],
+			"ip":  ["*"],
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["autogroup:member", "tag:machine", "tag:catbox"],
+			"ip":  ["22"],
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["autogroup:member", "tag:machine", "tag:catbox"],
+			"ip":  ["3389"],
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["autogroup:member", "tag:machine", "tag:catbox"],
+			"ip":  ["5900"],
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["autogroup:member", "tag:automata"],
+			"ip":  ["8642"],
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["autogroup:member", "tag:automata"],
+			"ip":  ["9900"],
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["tag:k8s-operator"],
+			"ip":  ["443"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:ai", "tag:web"],
+			"ip":  ["443"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:bittorrent"],
+			"ip":  ["6881"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:ftp"],
+			"ip":  ["21"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:ftp", "tag:git", "tag:ssh"],
+			"ip":  ["22"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:ftp"],
+			"ip":  ["990"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:ftp"],
+			"ip":  ["12000-12099"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:jellyfin"],
+			"ip":  ["1900"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:jellyfin"],
+			"ip":  ["7359"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:matrix"],
+			"ip":  ["8448"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:syncthing"],
+			"ip":  ["21027"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:syncthing"],
+			"ip":  ["22000"],
+		},
+		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:workstation"],
+			"ip":  ["25565"],
+		},
+		{
+			"src": ["tag:ai"],
+			"dst": ["autogroup:member", "tag:workstation"],
+			"ip":  ["1234"],
+		},
+		{
+			"src": ["tag:ai"],
+			"dst": ["tag:web"],
+			"ip":  ["443"],
+		},
+		{
+			"src": ["tag:automata"],
+			"dst": ["tag:ai"],
+			"ip":  ["443"],
+		},
+		{
+			"src": ["tag:automata"],
+			"dst": ["tag:automata"],
+			"ip":  ["8642"],
+		},
+		{
+			"src": ["tag:automata"],
+			"dst": ["tag:automata"],
+			"ip":  ["9900"],
+		},
+		{
+			"src": ["tag:machine"],
+			"dst": ["tag:machine"],
+			"ip":  ["22"],
+		},
+		{
+			"src": ["tag:machine"],
+			"dst": ["tag:web"],
+			"ip":  ["443"],
+		},
+		{
+			"src": ["tag:nishir-k8s-egress"],
+			"dst": ["tag:ai"],
+			"ip":  ["*"],
+		},
+		{
+			"src": ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
+			"dst": ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
+			"ip":  ["*"],
+		},
+	],
+
+	"nodeAttrs": [
+		{
+			"target": ["tag:web"],
+			"attr":   ["funnel"],
+		},
+		{
+			"target": ["autogroup:member", "tag:machine"],
+			"attr":   ["drive:share", "drive:access"],
+		},
+		{
+			"target": ["100.117.159.56"],
+			"attr":   ["mullvad"],
+		},
+		{
+			"target": ["100.77.66.124"],
+			"attr":   ["mullvad"],
+		},
+		{
+			"target": ["100.74.220.28"],
+			"attr":   ["mullvad"],
 		},
 	],
 
 	"ssh": [
 		{
+			"action": "accept",
+			"src":    ["autogroup:it-admin", "tag:workstation"],
+			"dst":    ["tag:machine"],
+			"users":  ["autogroup:nonroot", "root"],
+		},
+		{
+			"action": "accept",
+			"src":    ["autogroup:member", "tag:machine"],
+			"dst":    ["tag:machine"],
+			"users":  ["builder"],
+		},
+		{
 			"action": "check",
 			"src":    ["autogroup:member"],
-			"dst":    ["autogroup:self", "tag:machine", "tag:server"],
-			"users":  ["autogroup:nonroot", "root"],
+			"dst":    ["autogroup:self"],
+			"users":  ["autogroup:nonroot"],
 		},
 	],
 
+	"tagOwners": {
+		"tag:ai":                ["autogroup:it-admin"],
+		"tag:machine":           ["autogroup:it-admin"],
+		"tag:server":            ["tag:machine"],
+		"tag:workstation":       ["tag:machine"],
+		"tag:k8s-node":          ["tag:machine"],
+		"tag:k8s-operator":      ["tag:machine"],
+		"tag:automata":          ["tag:machine", "tag:k8s-operator"],
+		"tag:catbox":            ["tag:k8s-operator"],
+		"tag:nishir-k8s-egress": ["tag:k8s-operator"],
+		"tag:web":               ["tag:k8s-operator"],
+		"tag:jellyfin":          ["tag:k8s-operator"],
+		"tag:deluge":            ["tag:k8s-operator"],
+		"tag:sonarr":            ["tag:k8s-operator"],
+		"tag:copyparty":         ["tag:k8s-operator"],
+		"tag:bittorrent":        ["tag:k8s-operator"],
+		"tag:matrix":            ["tag:k8s-operator"],
+		"tag:syncthing":         ["tag:k8s-operator"],
+		"tag:git":               ["tag:k8s-operator"],
+		"tag:ftp":               ["tag:k8s-operator"],
+		"tag:ssh":               ["tag:k8s-operator"],
+	},
+
 	"tests": [
 		{
-			"src":    "autogroup:member",
+			"src":    "shikanime.deva@gmail.com",
 			"accept": ["tag:web:443"],
-		},
-		{
-			"src":    "tag:k8s-node",
-			"accept": ["tag:k8s-operator:443"],
-			"deny":   ["autogroup:member:22"],
 		},
 	],
 }
