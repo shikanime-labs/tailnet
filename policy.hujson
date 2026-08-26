@@ -1,0 +1,64 @@
+// Tailnet policy file for taila659a.ts.net, applied by CI on push to main.
+//
+// Seeded from the live tag inventory observed with `tailscale status --json`.
+// Replace it with the export from https://login.tailscale.com/admin/acls/file
+// before the first merge to main: `apply` overwrites control unconditionally.
+{
+	"tagOwners": {
+		"tag:aperture":     ["autogroup:admin"],
+		"tag:automata":     ["autogroup:admin"],
+		"tag:bittorrent":   ["autogroup:admin"],
+		"tag:ftp":          ["autogroup:admin"],
+		"tag:git":          ["autogroup:admin"],
+		"tag:k8s-node":     ["autogroup:admin"],
+		"tag:k8s-operator": ["autogroup:admin"],
+		"tag:machine":      ["autogroup:admin"],
+		"tag:server":       ["autogroup:admin"],
+		"tag:web":          ["autogroup:admin", "tag:k8s-operator"],
+		"tag:workstation":  ["autogroup:admin"],
+	},
+
+	"acls": [
+		{
+			"action": "accept",
+			"src":    ["autogroup:member"],
+			"dst":    ["*"],
+			"ip":     ["*"],
+		},
+		{
+			// Tagged nodes reach each other: k8s nodes, operator proxies,
+			// serve targets.
+			"action": "accept",
+			"src":    ["tag:k8s-node", "tag:k8s-operator", "tag:machine", "tag:server"],
+			"dst": [
+				"tag:k8s-node",
+				"tag:k8s-operator",
+				"tag:machine",
+				"tag:server",
+				"tag:web",
+			],
+			"ip": ["*"],
+		},
+	],
+
+	"ssh": [
+		{
+			"action": "check",
+			"src":    ["autogroup:member"],
+			"dst":    ["autogroup:self", "tag:machine", "tag:server"],
+			"users":  ["autogroup:nonroot", "root"],
+		},
+	],
+
+	"tests": [
+		{
+			"src":    "autogroup:member",
+			"accept": ["tag:web:443"],
+		},
+		{
+			"src":    "tag:k8s-node",
+			"accept": ["tag:k8s-operator:443"],
+			"deny":   ["autogroup:member:22"],
+		},
+	],
+}

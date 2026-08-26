@@ -1,0 +1,31 @@
+%YAML 1.1
+---
+jobs:
+  acl:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/cache@v5
+      with:
+        key: version-cache.json-${{ github.run_id }}
+        path: ./version-cache.json
+        restore-keys: version-cache.json-
+    - name: Sync policy
+      uses: tailscale/gitops-acl-action@v1
+      with:
+        action: ${{ github.event_name == 'pull_request' && 'test' || 'apply' }}
+        audience: ${{ vars.TAILSCALE_AUDIENCE }}
+        oauth-client-id: ${{ vars.TAILSCALE_OAUTH_CLIENT_ID }}
+        tailnet: ${{ vars.TAILSCALE_TAILNET }}
+name: Tailnet
+'on':
+  pull_request:
+    branches:
+    - main
+  push:
+    branches:
+    - main
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  id-token: write
