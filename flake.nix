@@ -74,6 +74,12 @@
             devlib.devenvModules.shikanime-studio
           ];
 
+          github.settings.zizmor = {
+            excessivePermissionsIgnore = [
+              ".github/workflows/tailnet.yaml"
+            ];
+          };
+
           github.settings.workflows.tailnet = {
             name = "Tailnet";
             on = {
@@ -85,29 +91,49 @@
               contents = "read";
               id-token = "write";
             };
-            jobs.acl = {
-              runs-on = "ubuntu-latest";
-              steps = [
-                { uses = "actions/checkout@v6"; }
-                {
-                  uses = "actions/cache@v5";
-                  "with" = {
-                    key = "version-cache.json-\${{ github.run_id }}";
-                    path = "./version-cache.json";
-                    restore-keys = "version-cache.json-";
-                  };
-                }
-                {
-                  name = "Sync policy";
-                  uses = "tailscale/gitops-acl-action@v1";
-                  "with" = {
-                    action = "\${{ github.event_name == 'pull_request' && 'test' || 'apply' }}";
-                    audience = "\${{ vars.TAILSCALE_AUDIENCE }}";
-                    oauth-client-id = "\${{ vars.TAILSCALE_OAUTH_CLIENT_ID }}";
-                    tailnet = "\${{ vars.TAILSCALE_TAILNET }}";
-                  };
-                }
-              ];
+            jobs = {
+              test = {
+                runs-on = "ubuntu-latest";
+                steps = [
+                  { uses = "actions/checkout@v6"; }
+                  {
+                    uses = "actions/cache@v5";
+                    "with" = {
+                      key = "version-cache.json-\${{ github.run_id }}";
+                      path = "./version-cache.json";
+                      restore-keys = "version-cache.json-";
+                    };
+                  }
+                  {
+                    name = "Validate policy";
+                    uses = "tailscale/gitops-acl-action@v1";
+                    "with" = {
+                      action = "test";
+                      audience = "\${{ vars.TAILSCALE_AUDIENCE }}";
+                      oauth-client-id = "\${{ vars.TAILSCALE_OAUTH_CLIENT_ID }}";
+                      tailnet = "\${{ vars.TAILSCALE_TAILNET }}";
+                    };
+                  }
+                ];
+              };
+              apply = {
+                "if" = "\${{ github.event_name != 'pull_request' }}";
+                runs-on = "ubuntu-latest";
+                needs = "test";
+                steps = [
+                  { uses = "actions/checkout@v6"; }
+                  {
+                    name = "Sync policy";
+                    uses = "tailscale/gitops-acl-action@v1";
+                    "with" = {
+                      action = "apply";
+                      audience = "\${{ vars.TAILSCALE_AUDIENCE }}";
+                      oauth-client-id = "\${{ vars.TAILSCALE_OAUTH_CLIENT_ID }}";
+                      tailnet = "\${{ vars.TAILSCALE_TAILNET }}";
+                    };
+                  }
+                ];
+              };
             };
           };
         };
