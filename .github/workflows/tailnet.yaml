@@ -34,6 +34,13 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/cache@v5
+        with:
+          key: version-cache.json-${{ github.run_id }}
+          path: ./version-cache.json
+          restore-keys: version-cache.json-
       - name: Sync policy
         uses: tailscale/gitops-acl-action@v1
         with:

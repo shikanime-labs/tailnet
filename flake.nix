@@ -74,12 +74,6 @@
             devlib.devenvModules.shikanime-studio
           ];
 
-          github.settings.zizmor = {
-            excessivePermissionsIgnore = [
-              ".github/workflows/tailnet.yaml"
-            ];
-          };
-
           github.settings.workflows.tailnet = {
             name = "Tailnet";
             on = {
@@ -121,7 +115,18 @@
                 runs-on = "ubuntu-latest";
                 needs = "test";
                 steps = [
-                  { uses = "actions/checkout@v6"; }
+                  {
+                    uses = "actions/checkout@v6";
+                    "with".persist-credentials = false;
+                  }
+                  {
+                    uses = "actions/cache@v5";
+                    "with" = {
+                      key = "version-cache.json-\${{ github.run_id }}";
+                      path = "./version-cache.json";
+                      restore-keys = "version-cache.json-";
+                    };
+                  }
                   {
                     name = "Sync policy";
                     uses = "tailscale/gitops-acl-action@v1";
