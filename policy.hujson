@@ -275,10 +275,73 @@
 		"tag:ssh":               ["tag:k8s-operator"],
 	},
 
+	// CI-enforced zero-trust invariants. These deny tests assert that the
+	// broad allow-list grants above do NOT leak into sensitive scopes. If a
+	// future edit accidentally widens access, the `test` job fails before apply.
+	//
+	// Tailscale `tests` reject autogroups as `src` (FR tailscale/tailscale#4416),
+	// so roles are represented by concrete stand-in identities:
+	//   - member path: member.example@shikanime.studio (a neutral placeholder)
+	//   - it-admin path: shikanime.deva@gmail.com (the owner identity)
+	// Assert only what the grants actually allow/deny; see docs/Network-Boundaries.md.
 	"tests": [
+		// --- autogroup:member path (stand-in: a neutral member identity) ---
 		{
+			// Members never reach the Kubernetes operator plane.
+			"src":  "member.example@shikanime.studio",
+			"deny": ["tag:k8s-operator:443"],
+		},
+		{
+			// Members have no raw IP access to infra nodes (SSH is gated separately).
+			"src":  "member.example@shikanime.studio",
+			"deny": ["tag:machine:22"],
+		},
+		{
+			// Members never reach the Automata control ports.
+			"src":  "member.example@shikanime.studio",
+			"deny": ["tag:automata:8642"],
+		},
+
+		// --- autogroup:it-admin path (stand-in: the owner identity) ---
+		{
+			// Admins reach the Kubernetes operator API.
 			"src":    "shikanime.deva@gmail.com",
-			"accept": ["tag:web:443"],
+			"accept": ["tag:k8s-operator:443"],
+		},
+		{
+			// Admins may SSH into infra nodes.
+			"src":    "shikanime.deva@gmail.com",
+			"accept": ["tag:machine:22"],
+		},
+		{
+			// Admins reach the Automata control plane.
+			"src":    "shikanime.deva@gmail.com",
+			"accept": ["tag:automata:8642", "tag:automata:9900"],
+		},
+
+		// --- non-user / tag-based invariants ---
+		{
+			// Untagged infra cannot initiate to the AI tier.
+			"src":  "tag:machine",
+			"deny": ["tag:ai:443"],
+		},
+		{
+			// Funnel-exposed web nodes stay isolated from internal services.
+			"src":  "tag:web",
+			"deny": ["tag:ai:443"],
+		},
+		{
+			// Pods may not pivot into node SSH.
+			"src":  "tag:k8s-node",
+			"deny": ["tag:machine:22"],
+		},
+		{
+			// Clusters must not initiate A2A into workstations. The merged
+			// directional model (PR #1241) permits workstation->cluster only;
+			// the app layer enforces this, and this deny is the network
+			// backstop so a misconfig cannot open the reverse path.
+			"src":  "tag:machine",
+			"deny": ["tag:workstation:9900", "tag:workstation:8642"],
 		},
 	],
 }
