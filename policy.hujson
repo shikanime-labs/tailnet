@@ -99,7 +99,7 @@
 		{
 			"src": ["autogroup:member"],
 			"dst": ["tag:ai", "tag:web"],
-			"ip":  ["443"],
+			"ip":  ["80", "443"],
 		},
 		{
 			"src": ["autogroup:member"],
@@ -154,7 +154,7 @@
 		{
 			"src": ["autogroup:member"],
 			"dst": ["tag:syncthing"],
-			"ip":  ["443"],
+			"ip":  ["80", "443"],
 		},
 		{
 			"src": ["autogroup:member"],
