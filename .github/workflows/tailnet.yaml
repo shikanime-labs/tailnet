@@ -1,8 +1,7 @@
 name: Tailnet
-# zizmor: ignore[excessive-permissions]
 permissions:
   contents: read
-  id-token: write
+  id-token: write # zizmor: ignore[excessive-permissions]
 "on":
   pull_request:
     branches:

@@ -153,6 +153,11 @@
 		},
 		{
 			"src": ["autogroup:member"],
+			"dst": ["tag:syncthing"],
+			"ip":  ["443"],
+		},
+		{
+			"src": ["autogroup:member"],
 			"dst": ["tag:workstation"],
 			"ip":  ["25565"],
 		},
