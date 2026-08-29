@@ -74,12 +74,6 @@
             devlib.devenvModules.shikanime-studio
           ];
 
-          github.settings.zizmor = {
-            excessivePermissionsIgnore = [
-              ".github/workflows/tailnet.yaml"
-            ];
-          };
-
           github.settings.workflows.tailnet = {
             name = "Tailnet";
             on = {
