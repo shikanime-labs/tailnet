@@ -2,6 +2,12 @@
 // Applied to control by CI (gitops-acl-action). Editing the admin console
 // directly makes the next run warn; always re-export before touching this.
 {
+	"nodeAttrs": [
+		{
+			"target": ["tag:k8s"],
+			"attr":   ["funnel"],
+		},
+	],
 	"autoApprovers": {
 		"routes": {
 			"10.244.0.0/16": ["tag:k8s-node"],
