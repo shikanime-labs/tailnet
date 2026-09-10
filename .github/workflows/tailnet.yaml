@@ -14,14 +14,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           key: version-cache.json-${{ github.run_id }}
           path: ./version-cache.json
           restore-keys: version-cache.json-
       - name: Validate policy
-        uses: tailscale/gitops-acl-action@v1
+        uses: tailscale/gitops-acl-action@5a4a17f5708e9bf96f4ee915a95e9f83c2eebe1a # v1
         with:
           action: test
           audience: ${{ vars.TAILSCALE_AUDIENCE }}
@@ -32,9 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Sync policy
-        uses: tailscale/gitops-acl-action@v1
+        uses: tailscale/gitops-acl-action@5a4a17f5708e9bf96f4ee915a95e9f83c2eebe1a # v1
         with:
           action: apply
           audience: ${{ vars.TAILSCALE_AUDIENCE }}
