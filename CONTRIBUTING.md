@@ -1,3 +1,19 @@
-# Contributing
+# Contributing to tailnet
 
-Fork, branch, open a PR against `main`. One logical change per PR.
+Tailscale tailnet configuration as code.
+
+## Workflow
+
+Fork, branch off `main`, open a PR against `main`. One logical change per PR.
+
+## Environment
+
+```sh
+direnv allow  # or: nix develop
+```
+
+## Validation
+
+`nix flake check` green before submitting.
+
+Security issues: see [SECURITY.md](SECURITY.md).
