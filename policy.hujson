@@ -187,6 +187,11 @@
 			"ip":  ["9900"],
 		},
 		{
+			"src": ["tag:nishir-k8s-egress"],
+			"dst": ["tag:automata"],
+			"ip":  ["9900", "8642"],
+		},
+		{
 			"src": ["tag:machine"],
 			"dst": ["tag:machine"],
 			"ip":  ["22"],
