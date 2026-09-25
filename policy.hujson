@@ -235,7 +235,7 @@
 		{
 			"action": "accept",
 			"src":    ["autogroup:it-admin", "tag:workstation"],
-			"dst":    ["tag:machine"],
+			"dst":    ["tag:machine", "tag:catbox"],
 			"users":  ["autogroup:nonroot", "root"],
 		},
 		{
