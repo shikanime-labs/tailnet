@@ -245,6 +245,12 @@
 			"users":  ["builder"],
 		},
 		{
+			"action": "accept",
+			"src":    ["tag:ci"],
+			"dst":    ["tag:machine"],
+			"users":  ["builder"],
+		},
+		{
 			"action": "check",
 			"src":    ["autogroup:member"],
 			"dst":    ["autogroup:self"],
@@ -273,6 +279,7 @@
 		"tag:git":               ["tag:k8s-operator"],
 		"tag:ftp":               ["tag:k8s-operator"],
 		"tag:ssh":               ["tag:k8s-operator"],
+		"tag:ci":                ["tag:machine"],
 	},
 
 	// CI-enforced zero-trust invariants. These deny tests assert that the
