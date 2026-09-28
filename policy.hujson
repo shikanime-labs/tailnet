@@ -93,6 +93,11 @@
 		},
 		{
 			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["tag:catbox"],
+			"ip":  ["9119"],
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
 			"dst": ["tag:k8s-operator"],
 			"ip":  ["443"],
 		},
