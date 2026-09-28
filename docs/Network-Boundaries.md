@@ -84,44 +84,60 @@ therefore applies to it-admin **or** any workstation node.
 
 All src `autogroup:member`:
 
+Service tags sit on the proxies and Ingresses themselves (`tag:jellyfin`,
+`tag:matrix`, `tag:copyparty`, …); `tag:web` remains granted only until every
+proxy is retagged.
+
 | id | dst | ports | line |
 |----|-----|-------|------|
-| `m-web` | `tag:ai`, `tag:web` | 443 | 100 |
-| `m-bittorrent` | `tag:bittorrent` | 6881 | 105 |
-| `m-ftp-21` | `tag:ftp` | 21 | 110 |
-| `m-ftp-22` | `tag:ftp`,`tag:git`,`tag:ssh` | 22 | 115 |
-| `m-ftp-990` | `tag:ftp` | 990 | 120 |
-| `m-ftp-passive` | `tag:ftp` | 12000-12099 | 125 |
-| `m-jellyfin-disc` | `tag:jellyfin` | 1900 | 130 |
-| `m-jellyfin-client` | `tag:jellyfin` | 7359 | 135 |
-| `m-matrix` | `tag:matrix` | 8448 | 140 |
-| `m-syncthing-disc` | `tag:syncthing` | 21027 | 145 |
-| `m-syncthing-peer` | `tag:syncthing` | 22000 | 150 |
-| `m-syncthing-tls` | `tag:syncthing` | 443 | 155 |
-| `m-workstation-game` | `tag:workstation` | 25565 | 160 |
+| `m-web` | `tag:ai`, `tag:web`, and every per-service web tag | 80, 443 | 100 |
+| `m-bittorrent` | `tag:bittorrent` | 6881 | 137 |
+| `m-ftp-21` | `tag:ftp` | 21 | 142 |
+| `m-ftp-22` | `tag:ftp`,`tag:git`,`tag:ssh` | 22 | 147 |
+| `m-ftp-990` | `tag:ftp` | 990 | 152 |
+| `m-ftp-passive` | `tag:ftp` | 12000-12099 | 157 |
+| `m-jellyfin-disc` | `tag:jellyfin` | 1900 | 162 |
+| `m-jellyfin-client` | `tag:jellyfin` | 7359 | 167 |
+| `m-matrix` | `tag:matrix` | 8448 | 172 |
+| `m-syncthing-disc` | `tag:syncthing` | 21027 | 177 |
+| `m-syncthing-peer` | `tag:syncthing` | 22000 | 182 |
+| `m-syncthing-tls` | `tag:syncthing` | 443 | 187 |
+| `m-workstation-game` | `tag:workstation` | 25565 | 192 |
 | `m-internet` | `autogroup:internet` | * | 65 |
 
 ### Service-to-service (tag-based)
 
 - `ai-egress-member` — `tag:ai` → `[autogroup:member, tag:workstation]:1234`.
-  line 165.
-- `ai-web` — `tag:ai` → `tag:web:443`. line 170.
-- `automata-ai` — `tag:automata` → `tag:ai:443`. line 175.
+  line 196. Rationale: the AI gateway fans out to the LM Studio instances on
+  member computers. It reaches nothing else.
+- `machine-ai` — `tag:machine` → `tag:ai:443`. line 221. Rationale: the hermes
+  agent on every fleet host calls the model gateway (`profiles/ai.nix` builds
+  its providers on `inference.i.shikanime.studio`). Confirmed live from ashira
+  and kushira.
+- `automata-services` — `tag:automata` → `tag:honcho`, `tag:matrix` `:443`.
+  line 236. Rationale: honcho is the Automata agents' memory store and the
+  matrix homeserver is where they coordinate; no other 443 consumer reads them.
+- `machine-web` — `tag:machine` → `tag:forgejo`, `tag:victoria-logs`,
+  `tag:victoria-metrics` `:443`. line 226. Rationale: the fleet hosts' own
+  config consumes exactly these (`profiles/base.nix` fetches the flake from
+  forgejo and remote-writes to metrics and logs). They are not clients of the
+  media, mirror, memory, or funnel services.
+- `automata-ai` — `tag:automata` → `tag:ai:443`. line 201.
 - `automata-automata` — `tag:automata` → `tag:automata:8642` and `:9900`.
-  lines 180, 185.
-- `machine-machine-ssh` — `tag:machine` → `tag:machine:22`. line 190.
-- `machine-web` — `tag:machine` → `tag:web:443`. line 195.
-- `nishir-egress` — `tag:nishir-k8s-egress` → `tag:ai:*`. line 200.
+  lines 206, 211.
+- `machine-machine-ssh` — `tag:machine` → `tag:machine:22`. line 216.
+- `nishir-egress` — `tag:nishir-k8s-egress` → `tag:ai:*`. line 240.
 - `pod-mesh` — `[tag:k8s-node, 10.244.0.0/16, fd00::/108]` → same, ports `*`.
-  line 205.
+  line 245.
 
 ### SSH
 
 | id | src | dst | users | action | line |
 |----|-----|-----|-------|--------|------|
-| `ssh-admin` | `[autogroup:it-admin, tag:workstation]` | `tag:machine` | nonroot, root | accept | 236 |
-| `ssh-builder` | `[autogroup:member, tag:machine]` | `tag:machine` | builder | accept | 243 |
-| `ssh-self` | `autogroup:member` | `autogroup:self` | nonroot | check | 248 |
+| `ssh-admin` | `[autogroup:it-admin, tag:workstation]` | `tag:machine` | nonroot, root | accept | 279 |
+| `ssh-builder` | `[autogroup:member, tag:machine]` | `tag:machine` | builder | accept | 285 |
+| `ssh-self` | `autogroup:member` | `autogroup:self` | nonroot | check | 291 |
+
 
 ### autoApprovers
 
@@ -131,9 +147,10 @@ All src `autogroup:member`:
 
 ### nodeAttrs
 
-- `tag:web` → `funnel` (ingress from the public internet). line 213.
-- `[autogroup:member, tag:machine]` → `drive:share`, `drive:access`. line 217.
-- Three fixed IPs → `mullvad` (exit via Tailscale/Mullvad). lines 221-231.
+- `tag:web`, `tag:matrix`, `tag:copyparty`, `tag:flux-receivers` →
+  `funnel` (ingress from the public internet). line 254.
+- `[autogroup:member, tag:machine]` → `drive:share`, `drive:access`. line 258.
+- Three fixed IPs → `mullvad` (exit via Tailscale/Mullvad). lines 262-271.
 
 ## Tag-ownership DAG and blast radius
 
@@ -178,10 +195,12 @@ Blast-radius notes:
 
 Reachable from outside the tailnet:
 
-- **Funnel on `tag:web`** (line 213) — the only nodeAttrs ingress. Any web-tagged
-  node is publicly reachable on its Funnel ports; `tag:web:443` is therefore
-  internet-facing. Scope it to static content only.
-- **Mullvad exit nodes** (lines 221-231) — named IPs route egress through
+- **Funnel on four service tags** (line 254) — the only nodeAttrs ingress. The
+  attribute grants those nodes permission to serve Funnel; exposure exists only
+  for the ports a Funnel config enables, today the four Funnel Ingresses on
+  `:443` (flux-receivers, matrix ×2, copyparty). Keep them to what must be
+  public.
+- **Mullvad exit nodes** (lines 262-271) — named IPs route egress through
   Mullvad; not an inbound surface.
 - **`autogroup:internet`** (line 65) — members may egress to the internet, not
   an inbound path.
@@ -210,10 +229,10 @@ flowchart LR
     ADMIN -->|drive rw| MACHINE
 
     AI -->|1234| MEMBER
-    AI -->|443| WEB
     AUTO -->|443| AI
     MACHINE -->|22| MACHINE
-    MACHINE -->|443| WEB
+    MACHINE -->|443| AI
+    MACHINE -->|443| FLEET["forgejo, victoria-logs,<br/>victoria-metrics"]
 
     classDef internet stroke:#090,stroke-width:3px;
     class WEB internet;
@@ -226,9 +245,10 @@ Audited from the committed `policy.hujson` (no live diff performed here).
 ### Passed invariants
 
 The non-user deny tests encode correct zero-trust backstops:
-`tag:machine`→`tag:ai:443` drop (333), `tag:web`→`tag:ai:443` drop (338),
-`tag:k8s-node`→`tag:machine:22` drop (343), `tag:machine`→`tag:workstation`
-A2A drop (351). These hold against the committed grants.
+`tag:web`→`tag:ai:443` drop (389), `tag:k8s-node`→`tag:machine:22` drop
+(394), `tag:machine`→`tag:workstation` A2A drop (402). These hold against the
+committed grants. `tag:machine`→`tag:ai:443` was a fourth assertion until the
+fleet hosts' model traffic was measured; it is now a grant.
 
 ### Gaps (open)
 
