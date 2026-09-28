@@ -115,9 +115,11 @@ services the Funnel exposes to the internet carry it, and it is all the
   agent on every fleet host calls the model gateway (`profiles/ai.nix` builds
   its providers on `inference.i.shikanime.studio`). Confirmed live from ashira
   and kushira.
-- `automata-services` — `tag:automata` → `tag:honcho`, `tag:matrix` `:443`.
-  line 235. Rationale: honcho is the Automata agents' memory store and the
-  matrix homeserver is where they coordinate; no other 443 consumer reads them.
+- `automata-services` — `tag:automata` → `tag:honcho`, `tag:matrix`, `tag:web`
+  `:443`. line 235. Rationale: honcho is the Automata agents' memory store and
+  the matrix homeserver is where they coordinate; `tag:web` covers the public
+  Funnel nodes (`matrix`, `copyparty`), which are the hostnames those agents
+  dial (`matrix.taila659a.ts.net`).
 - `machine-web` — `tag:machine` → `tag:forgejo`, `tag:victoria-logs`,
   `tag:victoria-metrics` `:443`. line 225. Rationale: the fleet hosts' own
   config consumes exactly these (`profiles/base.nix` fetches the flake from

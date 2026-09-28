@@ -232,7 +232,7 @@
 		},
 		{
 			"src": ["tag:automata"],
-			"dst": ["tag:honcho", "tag:matrix"],
+			"dst": ["tag:honcho", "tag:matrix", "tag:web"],
 			"ip":  ["443"],
 		},
 		{
