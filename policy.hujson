@@ -237,11 +237,6 @@
 			"ip":  ["443"],
 		},
 		{
-			"src": ["tag:nishir-k8s-egress"],
-			"dst": ["tag:inference"],
-			"ip":  ["*"],
-		},
-		{
 			"src": ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
 			"dst": ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
 			"ip":  ["*"],
@@ -301,7 +296,6 @@
 		"tag:k8s-operator":      ["tag:machine"],
 		"tag:automata":          ["tag:machine", "tag:k8s-operator"],
 		"tag:catbox":            ["tag:k8s-operator"],
-		"tag:nishir-k8s-egress": ["tag:k8s-operator"],
 		"tag:web":               ["tag:k8s-operator"],
 		"tag:authelia":             ["tag:k8s-operator"],
 		"tag:bazarr":               ["tag:k8s-operator"],

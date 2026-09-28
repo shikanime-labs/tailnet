@@ -18,36 +18,36 @@ Every boundary in this document follows one of two shapes.
 ### Boundary (a grant)
 
 ```yaml
-id:        <stable-slug>        # unique, kebab-case
-src:       [<identity>...]      # who initiates; user, tag, autogroup, CIDR
-dst:       [<identity>...]      # who is reached
-ports:     [<port|range>...]    # "*" = all TCP/UDP; absent = app-cap grant
-cap:       <name>               # tailscale.com/cap/* app capability grant
-rationale: <one line>           # why this access exists
-line:      <policy.hujson line> # citation into the source of truth
+id: <stable-slug> # unique, kebab-case
+src: [<identity>...] # who initiates; user, tag, autogroup, CIDR
+dst: [<identity>...] # who is reached
+ports: [<port|range>...] # "*" = all TCP/UDP; absent = app-cap grant
+cap: <name> # tailscale.com/cap/* app capability grant
+rationale: <one line> # why this access exists
+line: <policy.hujson line> # citation into the source of truth
 ```
 
 ### Invariant (a deny test)
 
 ```yaml
-id:        <stable-slug>
-src:       <identity|tag>
-deny:      [<dst:port>...]      # asserted never reachable
-line:      <policy.hujson line>
+id: <stable-slug>
+src: <identity|tag>
+deny: [<dst:port>...] # asserted never reachable
+line: <policy.hujson line>
 ```
 
 `src`/`dst` vocabulary:
 
-| Prefix | Meaning |
-|--------|---------|
-| `autogroup:member` | every user in the tailnet |
-| `autogroup:it-admin` | users with tailnet admin role |
-| `autogroup:self` | a node's own owner |
-| `autogroup:nonroot` / `autogroup:internet` | built-in groups |
-| `tag:<x>` | a node carrying tag `x` |
-| `10.244.0.0/16`, `fd00::/108` | pod/cluster CIDR |
+| Prefix                                     | Meaning                       |
+| ------------------------------------------ | ----------------------------- |
+| `autogroup:member`                         | every user in the tailnet     |
+| `autogroup:it-admin`                       | users with tailnet admin role |
+| `autogroup:self`                           | a node's own owner            |
+| `autogroup:nonroot` / `autogroup:internet` | built-in groups               |
+| `tag:<x>`                                  | a node carrying tag `x`       |
+| `10.244.0.0/16`, `fd00::/108`              | pod/cluster CIDR              |
 
-Note: each `src`/`dst` array is an OR (union) — `[a, b]` matches a *or* b,
+Note: each `src`/`dst` array is an OR (union) — `[a, b]` matches a _or_ b,
 not both. A grant with `src: ["autogroup:it-admin", "tag:workstation"]`
 therefore applies to it-admin **or** any workstation node.
 
@@ -90,22 +90,22 @@ services the Funnel exposes to the internet carry it, and it is all the
 `funnel` nodeAttr grants. Members and the Automata tier keep reach to
 those public nodes, so the tailnet path to them stays usable.
 
-| id | dst | ports | line |
-|----|-----|-------|------|
-| `m-web` | `tag:inference`, every per-service web tag, `tag:web` | 80, 443 | 100 |
-| `m-bittorrent` | `tag:bittorrent` | 6881 | 137 |
-| `m-ftp-21` | `tag:ftp` | 21 | 142 |
-| `m-ftp-22` | `tag:ftp`,`tag:git`,`tag:ssh` | 22 | 147 |
-| `m-ftp-990` | `tag:ftp` | 990 | 152 |
-| `m-ftp-passive` | `tag:ftp` | 12000-12099 | 157 |
-| `m-jellyfin-disc` | `tag:jellyfin` | 1900 | 162 |
-| `m-jellyfin-client` | `tag:jellyfin` | 7359 | 167 |
-| `m-matrix` | `tag:matrix` | 8448 | 172 |
-| `m-syncthing-disc` | `tag:syncthing` | 21027 | 177 |
-| `m-syncthing-peer` | `tag:syncthing` | 22000 | 182 |
-| `m-syncthing-tls` | `tag:syncthing` | 443 | 187 |
-| `m-workstation-game` | `tag:workstation` | 25565 | 192 |
-| `m-internet` | `autogroup:internet` | * | 65 |
+| id                   | dst                                                   | ports       | line |
+| -------------------- | ----------------------------------------------------- | ----------- | ---- |
+| `m-web`              | `tag:inference`, every per-service web tag, `tag:web` | 80, 443     | 100  |
+| `m-bittorrent`       | `tag:bittorrent`                                      | 6881        | 137  |
+| `m-ftp-21`           | `tag:ftp`                                             | 21          | 142  |
+| `m-ftp-22`           | `tag:ftp`,`tag:git`,`tag:ssh`                         | 22          | 147  |
+| `m-ftp-990`          | `tag:ftp`                                             | 990         | 152  |
+| `m-ftp-passive`      | `tag:ftp`                                             | 12000-12099 | 157  |
+| `m-jellyfin-disc`    | `tag:jellyfin`                                        | 1900        | 162  |
+| `m-jellyfin-client`  | `tag:jellyfin`                                        | 7359        | 167  |
+| `m-matrix`           | `tag:matrix`                                          | 8448        | 172  |
+| `m-syncthing-disc`   | `tag:syncthing`                                       | 21027       | 177  |
+| `m-syncthing-peer`   | `tag:syncthing`                                       | 22000       | 182  |
+| `m-syncthing-tls`    | `tag:syncthing`                                       | 443         | 187  |
+| `m-workstation-game` | `tag:workstation`                                     | 25565       | 192  |
+| `m-internet`         | `autogroup:internet`                                  | *           | 65   |
 
 ### Service-to-service (tag-based)
 
@@ -130,17 +130,16 @@ those public nodes, so the tailnet path to them stays usable.
 - `automata-automata` — `tag:automata` → `tag:automata:8642` and `:9900`.
   lines 205, 210.
 - `machine-machine-ssh` — `tag:machine` → `tag:machine:22`. line 215.
-- `nishir-egress` — `tag:nishir-k8s-egress` → `tag:inference:*`. line 239.
 - `pod-mesh` — `[tag:k8s-node, 10.244.0.0/16, fd00::/108]` → same, ports `*`.
-  line 244.
+  line 239.
 
 ### SSH
 
-| id | src | dst | users | action | line |
-|----|-----|-----|-------|--------|------|
-| `ssh-admin` | `[autogroup:it-admin, tag:workstation]` | `tag:machine` | nonroot, root | accept | 278 |
-| `ssh-builder` | `[autogroup:member, tag:machine]` | `tag:machine` | builder | accept | 284 |
-| `ssh-self` | `autogroup:member` | `autogroup:self` | nonroot | check | 290 |
+| id            | src                                     | dst              | users         | action | line |
+| ------------- | --------------------------------------- | ---------------- | ------------- | ------ | ---- |
+| `ssh-admin`   | `[autogroup:it-admin, tag:workstation]` | `tag:machine`    | nonroot, root | accept | 273  |
+| `ssh-builder` | `[autogroup:member, tag:machine]`       | `tag:machine`    | builder       | accept | 279  |
+| `ssh-self`    | `autogroup:member`                      | `autogroup:self` | nonroot       | check  | 285  |
 
 ### autoApprovers
 
@@ -150,9 +149,9 @@ those public nodes, so the tailnet path to them stays usable.
 
 ### nodeAttrs
 
-- `tag:web` → `funnel` (ingress from the public internet). line 253.
-- `[autogroup:member, tag:machine]` → `drive:share`, `drive:access`. line 257.
-- Three fixed IPs → `mullvad` (exit via Tailscale/Mullvad). lines 261-270.
+- `tag:web` → `funnel` (ingress from the public internet). line 248.
+- `[autogroup:member, tag:machine]` → `drive:share`, `drive:access`. line 252.
+- Three fixed IPs → `mullvad` (exit via Tailscale/Mullvad). lines 256-265.
 
 ## Tag-ownership DAG and blast radius
 
@@ -190,19 +189,19 @@ Blast-radius notes:
 - **`tag:machine`** owns the Kubernetes nodes and operators; it is the root of
   the service tree. A machine node can re-tag every service.
 - **`tag:k8s-operator`** owns the entire application fleet (web, media, file
-  transfer, AI ingress). It cannot tag `ai` or `machine` directly, bounding
-  lateral escalation to infra.
+  transfer, AI ingress). It cannot tag `machine` directly, bounding lateral
+  escalation to infra.
 
 ## External attack surface
 
 Reachable from outside the tailnet:
 
-- **Funnel on four service tags** (line 253) — the only nodeAttrs ingress. The
+- **Funnel on four service tags** (line 248) — the only nodeAttrs ingress. The
   attribute grants those nodes permission to serve Funnel; exposure exists only
   for the ports a Funnel config enables, today the four Funnel Ingresses on
   `:443` (flux-receivers, matrix ×2, copyparty). Keep them to what must be
   public.
-- **Mullvad exit nodes** (lines 261-270) — named IPs route egress through
+- **Mullvad exit nodes** (lines 256-265) — named IPs route egress through
   Mullvad; not an inbound surface.
 - **`autogroup:internet`** (line 65) — members may egress to the internet, not
   an inbound path.
@@ -247,9 +246,9 @@ Audited from the committed `policy.hujson` (no live diff performed here).
 ### Passed invariants
 
 The non-user deny tests encode correct zero-trust backstops:
-`tag:web`→`tag:inference:443` drop (388),
-`tag:k8s-node`→`tag:machine:22` drop (393), `tag:machine`→`tag:workstation`
-A2A drop (401). These hold against the committed grants.
+`tag:web`→`tag:inference:443` drop (382),
+`tag:k8s-node`→`tag:machine:22` drop (387), `tag:machine`→`tag:workstation`
+A2A drop (395). These hold against the committed grants.
 `tag:machine`→`tag:inference:443` was a fourth assertion until the fleet hosts'
 model traffic was measured; it is now a grant.
 
@@ -265,13 +264,13 @@ model traffic was measured; it is now a grant.
 ### Closed (this audit)
 
 - **G1 — admin `deny` assertions removed.** The prior `tests` asserted
-  `shikanime.deva@gmail.com` (it-admin stand-in) was *dropped* from
+  `shikanime.deva@gmail.com` (it-admin stand-in) was _dropped_ from
   `tag:inference:443` and `tag:web:443`. The stand-in is also a member, and
   line 100 grants `autogroup:member` `tag:inference:443` — that half could
   never hold; the `tag:web:443` half named a port granted to no one. Both were
   removed; the `test` job now passes.
 - **G2 — member `accept` assertion removed.** The prior `tests` asserted
-  `member.example@shikanime.studio` *accepts* `tag:web:443`. A non-existent
+  `member.example@shikanime.studio` _accepts_ `tag:web:443`. A non-existent
   stand-in email resolves to no grants (Drop), and no tailnet grant targets
   `tag:web`: it marks Funnel-exposed nodes, whose traffic arrives from the
   internet. The assertion was invalid and was removed.
