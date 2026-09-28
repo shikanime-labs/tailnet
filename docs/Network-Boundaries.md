@@ -87,11 +87,12 @@ All src `autogroup:member`:
 Service tags sit on the proxies and Ingresses themselves (`tag:jellyfin`,
 `tag:matrix`, `tag:copyparty`, …). `tag:web` is the one public marker: the
 services the Funnel exposes to the internet carry it, and it is all the
-`funnel` nodeAttr grants.
+`funnel` nodeAttr grants. Members and the Automata tier keep reach to those
+public nodes so the tailnet path to them stays usable.
 
 | id | dst | ports | line |
 |----|-----|-------|------|
-| `m-web` | `tag:ai` and every per-service web tag | 80, 443 | 100 |
+| `m-web` | `tag:ai`, every per-service web tag, `tag:web` | 80, 443 | 100 |
 | `m-bittorrent` | `tag:bittorrent` | 6881 | 137 |
 | `m-ftp-21` | `tag:ftp` | 21 | 142 |
 | `m-ftp-22` | `tag:ftp`,`tag:git`,`tag:ssh` | 22 | 147 |
