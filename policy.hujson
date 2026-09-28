@@ -99,7 +99,7 @@
 		{
 			"src": ["autogroup:member"],
 			"dst": [
-				"tag:ai",
+				"tag:inference",
 				"tag:web",
 				"tag:authelia",
 				"tag:automata",
@@ -193,13 +193,13 @@
 			"ip":  ["25565"],
 		},
 		{
-			"src": ["tag:ai"],
+			"src": ["tag:inference"],
 			"dst": ["autogroup:member", "tag:workstation"],
 			"ip":  ["1234"],
 		},
 		{
 			"src": ["tag:automata"],
-			"dst": ["tag:ai"],
+			"dst": ["tag:inference"],
 			"ip":  ["443"],
 		},
 		{
@@ -219,7 +219,7 @@
 		},
 		{
 			"src": ["tag:machine"],
-			"dst": ["tag:ai"],
+			"dst": ["tag:inference"],
 			"ip":  ["443"],
 		},
 		{
@@ -238,7 +238,7 @@
 		},
 		{
 			"src": ["tag:nishir-k8s-egress"],
-			"dst": ["tag:ai"],
+			"dst": ["tag:inference"],
 			"ip":  ["*"],
 		},
 		{
@@ -293,7 +293,7 @@
 	],
 
 	"tagOwners": {
-		"tag:ai":                ["autogroup:it-admin", "tag:k8s-operator"],
+		"tag:inference":         ["autogroup:it-admin", "tag:k8s-operator"],
 		"tag:machine":           ["autogroup:it-admin"],
 		"tag:server":            ["tag:machine"],
 		"tag:workstation":       ["tag:machine"],
@@ -386,7 +386,7 @@
 		{
 			// Funnel-exposed public nodes stay isolated from internal services.
 			"src":  "tag:web",
-			"deny": ["tag:ai:443"],
+			"deny": ["tag:inference:443"],
 		},
 		{
 			// Pods may not pivot into node SSH.
