@@ -100,6 +100,7 @@
 			"src": ["autogroup:member"],
 			"dst": [
 				"tag:ai",
+				"tag:web",
 				"tag:authelia",
 				"tag:automata",
 				"tag:bazarr",
