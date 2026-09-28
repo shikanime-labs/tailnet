@@ -98,7 +98,38 @@
 		},
 		{
 			"src": ["autogroup:member"],
-			"dst": ["tag:ai", "tag:web"],
+			"dst": [
+				"tag:ai",
+				"tag:web",
+				"tag:authelia",
+				"tag:automata",
+				"tag:bazarr",
+				"tag:copyparty",
+				"tag:flux-operator",
+				"tag:flux-receivers",
+				"tag:forgejo",
+				"tag:gitea-mirror",
+				"tag:honcho",
+				"tag:immich",
+				"tag:jellyfin",
+				"tag:llama-cpp",
+				"tag:lidarr",
+				"tag:lldap",
+				"tag:longhorn",
+				"tag:maintainerr",
+				"tag:matrix",
+				"tag:metatube",
+				"tag:prowlarr",
+				"tag:qbittorrent",
+				"tag:radarr",
+				"tag:seerr",
+				"tag:sonarr",
+				"tag:telsha-webhook",
+				"tag:vaultwarden",
+				"tag:victoria-logs",
+				"tag:victoria-metrics",
+				"tag:whisparr",
+			],
 			"ip":  ["80", "443"],
 		},
 		{
@@ -167,11 +198,6 @@
 			"ip":  ["1234"],
 		},
 		{
-			"src": ["tag:ai"],
-			"dst": ["tag:web"],
-			"ip":  ["443"],
-		},
-		{
 			"src": ["tag:automata"],
 			"dst": ["tag:ai"],
 			"ip":  ["443"],
@@ -193,7 +219,21 @@
 		},
 		{
 			"src": ["tag:machine"],
-			"dst": ["tag:web"],
+			"dst": ["tag:ai"],
+			"ip":  ["443"],
+		},
+		{
+			"src": ["tag:machine"],
+			"dst": [
+				"tag:forgejo",
+				"tag:victoria-logs",
+				"tag:victoria-metrics",
+			],
+			"ip":  ["443"],
+		},
+		{
+			"src": ["tag:automata"],
+			"dst": ["tag:honcho", "tag:matrix"],
 			"ip":  ["443"],
 		},
 		{
@@ -210,7 +250,7 @@
 
 	"nodeAttrs": [
 		{
-			"target": ["tag:web"],
+			"target": ["tag:web", "tag:matrix", "tag:copyparty", "tag:flux-receivers"],
 			"attr":   ["funnel"],
 		},
 		{
@@ -253,7 +293,7 @@
 	],
 
 	"tagOwners": {
-		"tag:ai":                ["autogroup:it-admin"],
+		"tag:ai":                ["autogroup:it-admin", "tag:k8s-operator"],
 		"tag:machine":           ["autogroup:it-admin"],
 		"tag:server":            ["tag:machine"],
 		"tag:workstation":       ["tag:machine"],
@@ -263,6 +303,29 @@
 		"tag:catbox":            ["tag:k8s-operator"],
 		"tag:nishir-k8s-egress": ["tag:k8s-operator"],
 		"tag:web":               ["tag:k8s-operator"],
+		"tag:authelia":             ["tag:k8s-operator"],
+		"tag:bazarr":               ["tag:k8s-operator"],
+		"tag:flux-operator":        ["tag:k8s-operator"],
+		"tag:flux-receivers":       ["tag:k8s-operator"],
+		"tag:forgejo":              ["tag:k8s-operator"],
+		"tag:gitea-mirror":         ["tag:k8s-operator"],
+		"tag:honcho":               ["tag:k8s-operator"],
+		"tag:immich":               ["tag:k8s-operator"],
+		"tag:llama-cpp":            ["tag:k8s-operator"],
+		"tag:lidarr":               ["tag:k8s-operator"],
+		"tag:lldap":                ["tag:k8s-operator"],
+		"tag:longhorn":             ["tag:k8s-operator"],
+		"tag:maintainerr":          ["tag:k8s-operator"],
+		"tag:metatube":             ["tag:k8s-operator"],
+		"tag:prowlarr":             ["tag:k8s-operator"],
+		"tag:qbittorrent":          ["tag:k8s-operator"],
+		"tag:radarr":               ["tag:k8s-operator"],
+		"tag:seerr":                ["tag:k8s-operator"],
+		"tag:telsha-webhook":       ["tag:k8s-operator"],
+		"tag:vaultwarden":          ["tag:k8s-operator"],
+		"tag:victoria-logs":        ["tag:k8s-operator"],
+		"tag:victoria-metrics":     ["tag:k8s-operator"],
+		"tag:whisparr":             ["tag:k8s-operator"],
 		"tag:jellyfin":          ["tag:k8s-operator"],
 		"tag:deluge":            ["tag:k8s-operator"],
 		"tag:sonarr":            ["tag:k8s-operator"],
@@ -320,11 +383,6 @@
 		},
 
 		// --- non-user / tag-based invariants ---
-		{
-			// Untagged infra cannot initiate to the AI tier.
-			"src":  "tag:machine",
-			"deny": ["tag:ai:443"],
-		},
 		{
 			// Funnel-exposed web nodes stay isolated from internal services.
 			"src":  "tag:web",
