@@ -87,11 +87,12 @@ All src `autogroup:member`:
 Service tags sit on the proxies and Ingresses themselves (`tag:jellyfin`,
 `tag:matrix`, `tag:copyparty`, …). `tag:web` is the one public marker: the
 services the Funnel exposes to the internet carry it, and it is all the
-`funnel` nodeAttr grants.
+`funnel` nodeAttr grants. Members and the Automata tier keep reach to
+those public nodes, so the tailnet path to them stays usable.
 
 | id | dst | ports | line |
 |----|-----|-------|------|
-| `m-web` | `tag:ai` and every per-service web tag | 80, 443 | 100 |
+| `m-web` | `tag:inference`, every per-service web tag, `tag:web` | 80, 443 | 100 |
 | `m-bittorrent` | `tag:bittorrent` | 6881 | 137 |
 | `m-ftp-21` | `tag:ftp` | 21 | 142 |
 | `m-ftp-22` | `tag:ftp`,`tag:git`,`tag:ssh` | 22 | 147 |
@@ -108,13 +109,13 @@ services the Funnel exposes to the internet carry it, and it is all the
 
 ### Service-to-service (tag-based)
 
-- `ai-egress-member` — `tag:ai` → `[autogroup:member, tag:workstation]:1234`.
+- `inference-egress-member` — `tag:inference` → `[autogroup:member, tag:workstation]:1234`.
   line 195. Rationale: the AI gateway fans out to the LM Studio instances on
   member computers. It reaches nothing else.
-- `machine-ai` — `tag:machine` → `tag:ai:443`. line 220. Rationale: the hermes
-  agent on every fleet host calls the model gateway (`profiles/ai.nix` builds
-  its providers on `inference.i.shikanime.studio`). Confirmed live from ashira
-  and kushira.
+- `machine-inference` — `tag:machine` → `tag:inference:443`. line 220.
+  Rationale: the hermes agent on every fleet host calls the model gateway
+  (`profiles/ai.nix` builds its providers on `inference.i.shikanime.studio`).
+  Confirmed live from ashira and kushira.
 - `automata-services` — `tag:automata` → `tag:honcho`, `tag:matrix`, `tag:web`
   `:443`. line 235. Rationale: honcho is the Automata agents' memory store and
   the matrix homeserver is where they coordinate; `tag:web` covers the public
@@ -125,11 +126,11 @@ services the Funnel exposes to the internet carry it, and it is all the
   config consumes exactly these (`profiles/base.nix` fetches the flake from
   forgejo and remote-writes to metrics and logs). They are not clients of the
   media, mirror, memory, or funnel services.
-- `automata-ai` — `tag:automata` → `tag:ai:443`. line 200.
+- `automata-inference` — `tag:automata` → `tag:inference:443`. line 200.
 - `automata-automata` — `tag:automata` → `tag:automata:8642` and `:9900`.
   lines 205, 210.
 - `machine-machine-ssh` — `tag:machine` → `tag:machine:22`. line 215.
-- `nishir-egress` — `tag:nishir-k8s-egress` → `tag:ai:*`. line 239.
+- `nishir-egress` — `tag:nishir-k8s-egress` → `tag:inference:*`. line 239.
 - `pod-mesh` — `[tag:k8s-node, 10.244.0.0/16, fd00::/108]` → same, ports `*`.
   line 244.
 
@@ -170,7 +171,7 @@ graph TD
     SUB["service fleet tags (web, media, file, AI ingress, ...)"]
 
     ADMIN -->|owns| MACHINE
-    ADMIN -->|owns| AI["tag:ai"]
+    ADMIN -->|owns| AI["tag:inference"]
     MACHINE -->|owns| SERVER
     MACHINE -->|owns| WS
     MACHINE -->|owns| KNODE
@@ -214,7 +215,7 @@ Inbound-from-internet is limited to Funnel. Everything else is tailnet-only.
 flowchart LR
     MEMBER["autogroup:member"]
     ADMIN["autogroup:it-admin + tag:workstation"]
-    AI["tag:ai"]
+    AI["tag:inference"]
     AUTO["tag:automata"]
     MACHINE["tag:machine"]
     WEB["tag:web (public / Funnel)"]
@@ -246,11 +247,11 @@ Audited from the committed `policy.hujson` (no live diff performed here).
 ### Passed invariants
 
 The non-user deny tests encode correct zero-trust backstops:
-`tag:web`→`tag:ai:443` drop
-(388), `tag:k8s-node`→`tag:machine:22` drop (393), `tag:machine`→`tag:workstation`
-A2A drop (401). These hold against the
-committed grants. `tag:machine`→`tag:ai:443` was a fourth assertion until the
-fleet hosts' model traffic was measured; it is now a grant.
+`tag:web`→`tag:inference:443` drop (388),
+`tag:k8s-node`→`tag:machine:22` drop (393), `tag:machine`→`tag:workstation`
+A2A drop (401). These hold against the committed grants.
+`tag:machine`→`tag:inference:443` was a fourth assertion until the fleet hosts'
+model traffic was measured; it is now a grant.
 
 ### Gaps (open)
 
@@ -265,10 +266,10 @@ fleet hosts' model traffic was measured; it is now a grant.
 
 - **G1 — admin `deny` assertions removed.** The prior `tests` asserted
   `shikanime.deva@gmail.com` (it-admin stand-in) was *dropped* from
-  `tag:ai:443` and `tag:web:443`. The stand-in is also a member, and line 100
-  grants `autogroup:member` `tag:ai:443` — that half could never hold; the
-  `tag:web:443` half named a port granted to no one. Both were removed; the
-  `test` job now passes.
+  `tag:inference:443` and `tag:web:443`. The stand-in is also a member, and
+  line 100 grants `autogroup:member` `tag:inference:443` — that half could
+  never hold; the `tag:web:443` half named a port granted to no one. Both were
+  removed; the `test` job now passes.
 - **G2 — member `accept` assertion removed.** The prior `tests` asserted
   `member.example@shikanime.studio` *accepts* `tag:web:443`. A non-existent
   stand-in email resolves to no grants (Drop), and no tailnet grant targets
