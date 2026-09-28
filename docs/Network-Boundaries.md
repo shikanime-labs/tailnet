@@ -85,12 +85,13 @@ therefore applies to it-admin **or** any workstation node.
 All src `autogroup:member`:
 
 Service tags sit on the proxies and Ingresses themselves (`tag:jellyfin`,
-`tag:matrix`, `tag:copyparty`, …); `tag:web` remains granted only until every
-proxy is retagged.
+`tag:matrix`, `tag:copyparty`, …). `tag:web` is the one public marker: the
+services the Funnel exposes to the internet carry it, and it is all the
+`funnel` nodeAttr grants.
 
 | id | dst | ports | line |
 |----|-----|-------|------|
-| `m-web` | `tag:ai`, `tag:web`, and every per-service web tag | 80, 443 | 100 |
+| `m-web` | `tag:ai` and every per-service web tag | 80, 443 | 100 |
 | `m-bittorrent` | `tag:bittorrent` | 6881 | 137 |
 | `m-ftp-21` | `tag:ftp` | 21 | 142 |
 | `m-ftp-22` | `tag:ftp`,`tag:git`,`tag:ssh` | 22 | 147 |
@@ -108,36 +109,35 @@ proxy is retagged.
 ### Service-to-service (tag-based)
 
 - `ai-egress-member` — `tag:ai` → `[autogroup:member, tag:workstation]:1234`.
-  line 196. Rationale: the AI gateway fans out to the LM Studio instances on
+  line 195. Rationale: the AI gateway fans out to the LM Studio instances on
   member computers. It reaches nothing else.
-- `machine-ai` — `tag:machine` → `tag:ai:443`. line 221. Rationale: the hermes
+- `machine-ai` — `tag:machine` → `tag:ai:443`. line 220. Rationale: the hermes
   agent on every fleet host calls the model gateway (`profiles/ai.nix` builds
   its providers on `inference.i.shikanime.studio`). Confirmed live from ashira
   and kushira.
 - `automata-services` — `tag:automata` → `tag:honcho`, `tag:matrix` `:443`.
-  line 236. Rationale: honcho is the Automata agents' memory store and the
+  line 235. Rationale: honcho is the Automata agents' memory store and the
   matrix homeserver is where they coordinate; no other 443 consumer reads them.
 - `machine-web` — `tag:machine` → `tag:forgejo`, `tag:victoria-logs`,
-  `tag:victoria-metrics` `:443`. line 226. Rationale: the fleet hosts' own
+  `tag:victoria-metrics` `:443`. line 225. Rationale: the fleet hosts' own
   config consumes exactly these (`profiles/base.nix` fetches the flake from
   forgejo and remote-writes to metrics and logs). They are not clients of the
   media, mirror, memory, or funnel services.
-- `automata-ai` — `tag:automata` → `tag:ai:443`. line 201.
+- `automata-ai` — `tag:automata` → `tag:ai:443`. line 200.
 - `automata-automata` — `tag:automata` → `tag:automata:8642` and `:9900`.
-  lines 206, 211.
-- `machine-machine-ssh` — `tag:machine` → `tag:machine:22`. line 216.
-- `nishir-egress` — `tag:nishir-k8s-egress` → `tag:ai:*`. line 240.
+  lines 205, 210.
+- `machine-machine-ssh` — `tag:machine` → `tag:machine:22`. line 215.
+- `nishir-egress` — `tag:nishir-k8s-egress` → `tag:ai:*`. line 239.
 - `pod-mesh` — `[tag:k8s-node, 10.244.0.0/16, fd00::/108]` → same, ports `*`.
-  line 245.
+  line 244.
 
 ### SSH
 
 | id | src | dst | users | action | line |
 |----|-----|-----|-------|--------|------|
-| `ssh-admin` | `[autogroup:it-admin, tag:workstation]` | `tag:machine` | nonroot, root | accept | 279 |
-| `ssh-builder` | `[autogroup:member, tag:machine]` | `tag:machine` | builder | accept | 285 |
-| `ssh-self` | `autogroup:member` | `autogroup:self` | nonroot | check | 291 |
-
+| `ssh-admin` | `[autogroup:it-admin, tag:workstation]` | `tag:machine` | nonroot, root | accept | 278 |
+| `ssh-builder` | `[autogroup:member, tag:machine]` | `tag:machine` | builder | accept | 284 |
+| `ssh-self` | `autogroup:member` | `autogroup:self` | nonroot | check | 290 |
 
 ### autoApprovers
 
@@ -147,10 +147,9 @@ proxy is retagged.
 
 ### nodeAttrs
 
-- `tag:web`, `tag:matrix`, `tag:copyparty`, `tag:flux-receivers` →
-  `funnel` (ingress from the public internet). line 254.
-- `[autogroup:member, tag:machine]` → `drive:share`, `drive:access`. line 258.
-- Three fixed IPs → `mullvad` (exit via Tailscale/Mullvad). lines 262-271.
+- `tag:web` → `funnel` (ingress from the public internet). line 253.
+- `[autogroup:member, tag:machine]` → `drive:share`, `drive:access`. line 257.
+- Three fixed IPs → `mullvad` (exit via Tailscale/Mullvad). lines 261-270.
 
 ## Tag-ownership DAG and blast radius
 
@@ -195,12 +194,12 @@ Blast-radius notes:
 
 Reachable from outside the tailnet:
 
-- **Funnel on four service tags** (line 254) — the only nodeAttrs ingress. The
+- **Funnel on four service tags** (line 253) — the only nodeAttrs ingress. The
   attribute grants those nodes permission to serve Funnel; exposure exists only
   for the ports a Funnel config enables, today the four Funnel Ingresses on
   `:443` (flux-receivers, matrix ×2, copyparty). Keep them to what must be
   public.
-- **Mullvad exit nodes** (lines 262-271) — named IPs route egress through
+- **Mullvad exit nodes** (lines 261-270) — named IPs route egress through
   Mullvad; not an inbound surface.
 - **`autogroup:internet`** (line 65) — members may egress to the internet, not
   an inbound path.
@@ -216,7 +215,7 @@ flowchart LR
     AI["tag:ai"]
     AUTO["tag:automata"]
     MACHINE["tag:machine"]
-    WEB["tag:web (Funnel / internet)"]
+    WEB["tag:web (public / Funnel)"]
 
     MEMBER -->|443| WEB
     MEMBER -->|443| AI
@@ -245,8 +244,9 @@ Audited from the committed `policy.hujson` (no live diff performed here).
 ### Passed invariants
 
 The non-user deny tests encode correct zero-trust backstops:
-`tag:web`→`tag:ai:443` drop (389), `tag:k8s-node`→`tag:machine:22` drop
-(394), `tag:machine`→`tag:workstation` A2A drop (402). These hold against the
+`tag:web`→`tag:ai:443` drop
+(388), `tag:k8s-node`→`tag:machine:22` drop (393), `tag:machine`→`tag:workstation`
+A2A drop (401). These hold against the
 committed grants. `tag:machine`→`tag:ai:443` was a fourth assertion until the
 fleet hosts' model traffic was measured; it is now a grant.
 
@@ -264,12 +264,14 @@ fleet hosts' model traffic was measured; it is now a grant.
 - **G1 — admin `deny` assertions removed.** The prior `tests` asserted
   `shikanime.deva@gmail.com` (it-admin stand-in) was *dropped* from
   `tag:ai:443` and `tag:web:443`. The stand-in is also a member, and line 100
-  grants `autogroup:member` those ports — so the deny could never hold. Those
-  two tests were removed; the `test` job now passes.
+  grants `autogroup:member` `tag:ai:443` — that half could never hold; the
+  `tag:web:443` half named a port granted to no one. Both were removed; the
+  `test` job now passes.
 - **G2 — member `accept` assertion removed.** The prior `tests` asserted
   `member.example@shikanime.studio` *accepts* `tag:web:443`. A non-existent
-  stand-in email resolves to no grants (Drop), and `tag:web:443` is granted
-  only to `tag:machine`/`tag:ai`. The assertion was invalid and was removed.
+  stand-in email resolves to no grants (Drop), and no tailnet grant targets
+  `tag:web`: it marks Funnel-exposed nodes, whose traffic arrives from the
+  internet. The assertion was invalid and was removed.
 - **G4 — `tests` are now CI-enforced and green.** PR #12's corrected `tests`
   block passes the `test` job, so the remaining invariants are proven, not
   assumed.

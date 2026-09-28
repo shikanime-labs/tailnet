@@ -100,7 +100,6 @@
 			"src": ["autogroup:member"],
 			"dst": [
 				"tag:ai",
-				"tag:web",
 				"tag:authelia",
 				"tag:automata",
 				"tag:bazarr",
@@ -250,7 +249,7 @@
 
 	"nodeAttrs": [
 		{
-			"target": ["tag:web", "tag:matrix", "tag:copyparty", "tag:flux-receivers"],
+			"target": ["tag:web"],
 			"attr":   ["funnel"],
 		},
 		{
@@ -384,7 +383,7 @@
 
 		// --- non-user / tag-based invariants ---
 		{
-			// Funnel-exposed web nodes stay isolated from internal services.
+			// Funnel-exposed public nodes stay isolated from internal services.
 			"src":  "tag:web",
 			"deny": ["tag:ai:443"],
 		},
