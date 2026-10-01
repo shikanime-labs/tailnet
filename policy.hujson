@@ -225,7 +225,9 @@
 		{
 			"src": ["tag:machine"],
 			"dst": [
+				"tag:authelia",
 				"tag:forgejo",
+				"tag:lldap",
 				"tag:victoria-logs",
 				"tag:victoria-metrics",
 			],
@@ -394,6 +396,13 @@
 			// backstop so a misconfig cannot open the reverse path.
 			"src":  "tag:machine",
 			"deny": ["tag:workstation:9900", "tag:workstation:8642"],
+		},
+		{
+			// Every machine reaches the identity tier (Authelia OIDC, lldap
+			// LDAP) on 443; nothing else on those nodes.
+			"src":    "tag:machine",
+			"accept": ["tag:authelia:443", "tag:lldap:443"],
+			"deny":   ["tag:authelia:9091"],
 		},
 	],
 }
