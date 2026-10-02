@@ -198,18 +198,18 @@
 			"ip":  ["1234"],
 		},
 		{
-			"src": ["tag:automata"],
+			"src": ["tag:automata", "tag:catbox"],
 			"dst": ["tag:inference"],
 			"ip":  ["443"],
 		},
 		{
-			"src": ["tag:automata"],
-			"dst": ["tag:automata"],
+			"src": ["tag:automata", "tag:catbox"],
+			"dst": ["tag:automata", "tag:catbox"],
 			"ip":  ["8642"],
 		},
 		{
-			"src": ["tag:automata"],
-			"dst": ["tag:automata"],
+			"src": ["tag:automata", "tag:catbox"],
+			"dst": ["tag:automata", "tag:catbox"],
 			"ip":  ["9900"],
 		},
 		{
