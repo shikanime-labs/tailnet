@@ -102,35 +102,47 @@
 				"tag:inference",
 				"tag:web",
 				"tag:authelia",
-				"tag:automata",
-				"tag:bazarr",
 				"tag:copyparty",
-				"tag:flux-operator",
-				"tag:flux-receivers",
 				"tag:forgejo",
-				"tag:gitea-mirror",
 				"tag:honcho",
 				"tag:immich",
 				"tag:jellyfin",
 				"tag:llama-cpp",
-				"tag:lidarr",
 				"tag:lldap",
 				"tag:longhorn",
-				"tag:maintainerr",
 				"tag:matrix",
-				"tag:metatube",
-				"tag:prowlarr",
 				"tag:qbittorrent",
 				"tag:radarr",
 				"tag:seerr",
 				"tag:sonarr",
-				"tag:telsha-webhook",
 				"tag:vaultwarden",
 				"tag:victoria-logs",
 				"tag:victoria-metrics",
+			],
+			"ip":  ["80", "443"],
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": [
+				"tag:automata",
+				"tag:bazarr",
+				"tag:flux-operator",
+				"tag:flux-receivers",
+				"tag:gitea-mirror",
+				"tag:lidarr",
+				"tag:maintainerr",
+				"tag:metatube",
+				"tag:prowlarr",
+				"tag:syncthing",
+				"tag:telsha-webhook",
 				"tag:whisparr",
 			],
 			"ip":  ["80", "443"],
+		},
+		{
+			"src": ["autogroup:it-admin", "tag:workstation"],
+			"dst": ["tag:syncthing"],
+			"ip":  ["21027", "22000"],
 		},
 		{
 			"src": ["autogroup:member"],
@@ -171,21 +183,6 @@
 			"src": ["autogroup:member"],
 			"dst": ["tag:matrix"],
 			"ip":  ["8448"],
-		},
-		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:syncthing"],
-			"ip":  ["21027"],
-		},
-		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:syncthing"],
-			"ip":  ["22000"],
-		},
-		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:syncthing"],
-			"ip":  ["80", "443"],
 		},
 		{
 			"src": ["autogroup:member"],
@@ -360,6 +357,29 @@
 			"src":  "member.example@shikanime.studio",
 			"deny": ["tag:automata:8642"],
 		},
+		{
+			// Restricted tier (arr stack, sync, flux, webhook) is admin-only.
+			"src":  "member.example@shikanime.studio",
+			"deny": [
+				"tag:automata:443",
+				"tag:bazarr:443",
+				"tag:flux-operator:443",
+				"tag:flux-receivers:443",
+				"tag:gitea-mirror:443",
+				"tag:lidarr:443",
+				"tag:maintainerr:443",
+				"tag:metatube:443",
+				"tag:prowlarr:443",
+				"tag:syncthing:443",
+				"tag:telsha-webhook:443",
+				"tag:whisparr:443",
+			],
+		},
+		{
+			// Members cannot sync with Syncthing peers.
+			"src":  "member.example@shikanime.studio",
+			"deny": ["tag:syncthing:22000", "tag:syncthing:21027"],
+		},
 
 		// --- autogroup:it-admin path (stand-in: the owner identity) ---
 		{
@@ -376,6 +396,29 @@
 			// Admins reach the Automata control plane.
 			"src":    "shikanime.deva@gmail.com",
 			"accept": ["tag:automata:8642", "tag:automata:9900"],
+		},
+		{
+			// Admins reach the restricted tier (arr stack, sync, flux, webhook).
+			"src":    "shikanime.deva@gmail.com",
+			"accept": [
+				"tag:automata:443",
+				"tag:bazarr:443",
+				"tag:flux-operator:443",
+				"tag:flux-receivers:443",
+				"tag:gitea-mirror:443",
+				"tag:lidarr:443",
+				"tag:maintainerr:443",
+				"tag:metatube:443",
+				"tag:prowlarr:443",
+				"tag:syncthing:443",
+				"tag:telsha-webhook:443",
+				"tag:whisparr:443",
+			],
+		},
+		{
+			// Admins may sync with Syncthing peers.
+			"src":    "shikanime.deva@gmail.com",
+			"accept": ["tag:syncthing:22000", "tag:syncthing:21027"],
 		},
 
 		// --- non-user / tag-based invariants ---
