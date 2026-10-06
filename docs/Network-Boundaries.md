@@ -79,6 +79,8 @@ therefore applies to it-admin **or** any workstation node.
   line 80.
 - `automata-ctl-8642` — it-admin + workstation → `tag:automata:8642`. line 85.
 - `automata-ctl-9900` — it-admin + workstation → `tag:automata:9900`. line 90.
+- `automata-desktop-9119` — it-admin + workstation → `tag:automata:9119`, the
+  Hermes Desktop remote-gateway port. line 95.
 
 ### Member service allow-list
 
@@ -226,7 +228,7 @@ flowchart LR
 
     ADMIN -->|k8s impersonate system:masters| KOP["tag:k8s-operator"]
     ADMIN -->|22,3389,5900| MACHINE
-    ADMIN -->|8642,9900| AUTO
+    ADMIN -->|8642,9900,9119| AUTO
     ADMIN -->|drive rw| MACHINE
 
     AI -->|1234| MEMBER
