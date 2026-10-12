@@ -241,6 +241,16 @@
 			"ip":  ["443"],
 		},
 		{
+			"src": ["autogroup:member"],
+			"dst": ["tag:blocky"],
+			"ip":  ["53"],
+		},
+		{
+			"src": ["tag:machine"],
+			"dst": ["tag:blocky"],
+			"ip":  ["53"],
+		},
+		{
 			"src": ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
 			"dst": ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
 			"ip":  ["*"],
@@ -299,6 +309,7 @@
 		"tag:k8s-node":          ["tag:machine"],
 		"tag:k8s-operator":      ["tag:machine"],
 		"tag:automata":          ["tag:machine", "tag:k8s-operator"],
+		"tag:blocky":            ["tag:k8s-operator"],
 		"tag:catbox":            ["tag:k8s-operator"],
 		"tag:web":               ["tag:k8s-operator"],
 		"tag:authelia":             ["tag:k8s-operator"],
