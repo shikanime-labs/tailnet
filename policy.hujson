@@ -14,247 +14,167 @@
 
 	"grants": [
 		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["tag:k8s-operator"],
+			"src":  ["autogroup:it-admin", "tag:workstation"],
+			"dst":  ["tag:k8s-operator"],
 			"app": {
-				"tailscale.com/cap/kubernetes": [
-					{"impersonate": {"groups": ["system:masters"]}},
-				],
-			},
+			   "tailscale.com/cap/kubernetes": [
+			      {
+			         "impersonate": {
+			            "groups": [
+			               "system:masters"
+			            ]
+			         }
+			      }
+			   ]
+			}
 		},
 		{
-			"src": ["autogroup:member"],
-			"dst": ["autogroup:self"],
-
+			"src":  ["autogroup:member"],
+			"dst":  ["autogroup:self"],
 			"app": {
-				"tailscale.com/cap/drive": [
-					{
-						"shares": ["*"],
-						"access": "rw",
-					},
-				],
-			},
+			   "tailscale.com/cap/drive": [
+			      {
+			         "access": "rw",
+			         "shares": [
+			            "*"
+			         ]
+			      }
+			   ]
+			}
 		},
 		{
-			"src": ["autogroup:member", "tag:machine"],
-			"dst": ["autogroup:member", "tag:machine"],
-
+			"src":  ["autogroup:member", "tag:machine"],
+			"dst":  ["autogroup:member", "tag:machine"],
 			"app": {
-				"tailscale.com/cap/drive": [
-					{
-						"shares": ["*"],
-						"access": "ro",
-					},
-				],
-			},
+			   "tailscale.com/cap/drive": [
+			      {
+			         "access": "ro",
+			         "shares": [
+			            "*"
+			         ]
+			      }
+			   ]
+			}
 		},
 		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["autogroup:member", "tag:machine"],
-
+			"src":  ["autogroup:it-admin", "tag:workstation"],
+			"dst":  ["autogroup:member", "tag:machine"],
 			"app": {
-				"tailscale.com/cap/drive": [
-					{
-						"shares": ["*"],
-						"access": "rw",
-					},
-				],
-			},
+			   "tailscale.com/cap/drive": [
+			      {
+			         "access": "rw",
+			         "shares": [
+			            "*"
+			         ]
+			      }
+			   ]
+			}
 		},
 		{
-			"src": ["autogroup:member", "tag:machine"],
-			"dst": ["autogroup:internet"],
+			"src":  ["autogroup:member", "tag:machine"],
+			"dst":  ["autogroup:internet"],
 			"ip":  ["*"],
 		},
 		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["autogroup:member", "tag:machine", "tag:catbox"],
-			"ip":  ["22"],
+			"src":  ["autogroup:it-admin", "tag:workstation"],
+			"dst":  ["autogroup:member", "tag:machine", "tag:catbox"],
+			"ip":  ["22", "3389", "5900"],
 		},
 		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["autogroup:member", "tag:machine", "tag:catbox"],
-			"ip":  ["3389"],
+			"src":  ["autogroup:it-admin", "tag:workstation"],
+			"dst":  ["autogroup:member", "tag:automata"],
+			"ip":  ["8642", "9119", "9900"],
 		},
 		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["autogroup:member", "tag:machine", "tag:catbox"],
-			"ip":  ["5900"],
-		},
-		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["autogroup:member", "tag:automata"],
-			"ip":  ["8642"],
-		},
-		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["autogroup:member", "tag:automata"],
-			"ip":  ["9900"],
-		},
-		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["autogroup:member", "tag:automata"],
-			"ip":  ["9119"],
-		},
-		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["tag:k8s-operator"],
+			"src":  ["autogroup:it-admin", "tag:workstation"],
+			"dst":  ["tag:k8s-operator"],
 			"ip":  ["443"],
 		},
 		{
-			"src": ["autogroup:member"],
-			"dst": [
-				"tag:inference",
-				"tag:web",
-				"tag:authelia",
-				"tag:copyparty",
-				"tag:forgejo",
-				"tag:honcho",
-				"tag:immich",
-				"tag:jellyfin",
-				"tag:llama-cpp",
-				"tag:lldap",
-				"tag:longhorn",
-				"tag:matrix",
-				"tag:qbittorrent",
-				"tag:radarr",
-				"tag:seerr",
-				"tag:sonarr",
-				"tag:vaultwarden",
-				"tag:victoria-logs",
-				"tag:victoria-metrics",
-			],
-			"ip":  ["80", "443"],
+			"src":  ["autogroup:member"],
+			"dst":  ["tag:inference", "tag:web", "tag:authelia", "tag:copyparty", "tag:forgejo", "tag:honcho", "tag:immich", "tag:jellyfin", "tag:llama-cpp", "tag:lldap", "tag:longhorn", "tag:matrix", "tag:qbittorrent", "tag:radarr", "tag:seerr", "tag:sonarr", "tag:vaultwarden", "tag:victoria-logs", "tag:victoria-metrics"],
+			"ip":  ["443", "80"],
 		},
 		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": [
-				"tag:automata",
-				"tag:bazarr",
-				"tag:flux-operator",
-				"tag:flux-receivers",
-				"tag:gitea-mirror",
-				"tag:lidarr",
-				"tag:maintainerr",
-				"tag:metatube",
-				"tag:prowlarr",
-				"tag:syncthing",
-				"tag:telsha-webhook",
-				"tag:whisparr",
-			],
-			"ip":  ["80", "443"],
+			"src":  ["autogroup:it-admin", "tag:workstation"],
+			"dst":  ["tag:automata", "tag:bazarr", "tag:flux-operator", "tag:flux-receivers", "tag:gitea-mirror", "tag:lidarr", "tag:maintainerr", "tag:metatube", "tag:prowlarr", "tag:syncthing", "tag:telsha-webhook", "tag:whisparr"],
+			"ip":  ["443", "80"],
 		},
 		{
-			"src": ["autogroup:it-admin", "tag:workstation"],
-			"dst": ["tag:syncthing"],
+			"src":  ["autogroup:it-admin", "tag:workstation"],
+			"dst":  ["tag:syncthing"],
 			"ip":  ["21027", "22000"],
 		},
 		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:bittorrent"],
+			"src":  ["autogroup:member"],
+			"dst":  ["tag:bittorrent"],
 			"ip":  ["6881"],
 		},
 		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:ftp"],
-			"ip":  ["21"],
+			"src":  ["autogroup:member"],
+			"dst":  ["tag:ftp"],
+			"ip":  ["12000-12099", "21", "990"],
 		},
 		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:ftp", "tag:git", "tag:ssh"],
+			"src":  ["autogroup:member"],
+			"dst":  ["tag:ftp", "tag:git", "tag:ssh"],
 			"ip":  ["22"],
 		},
 		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:ftp"],
-			"ip":  ["990"],
+			"src":  ["autogroup:member"],
+			"dst":  ["tag:jellyfin"],
+			"ip":  ["1900", "7359"],
 		},
 		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:ftp"],
-			"ip":  ["12000-12099"],
-		},
-		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:jellyfin"],
-			"ip":  ["1900"],
-		},
-		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:jellyfin"],
-			"ip":  ["7359"],
-		},
-		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:matrix"],
+			"src":  ["autogroup:member"],
+			"dst":  ["tag:matrix"],
 			"ip":  ["8448"],
 		},
 		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:workstation"],
+			"src":  ["autogroup:member"],
+			"dst":  ["tag:workstation"],
 			"ip":  ["25565"],
 		},
 		{
-			"src": ["tag:inference"],
-			"dst": ["autogroup:member", "tag:workstation"],
+			"src":  ["tag:inference"],
+			"dst":  ["autogroup:member", "tag:workstation"],
 			"ip":  ["1234"],
 		},
 		{
-			"src": ["tag:automata"],
-			"dst": ["tag:inference"],
+			"src":  ["tag:automata"],
+			"dst":  ["tag:honcho", "tag:inference", "tag:matrix", "tag:web"],
 			"ip":  ["443"],
 		},
 		{
-			"src": ["tag:automata"],
-			"dst": ["tag:automata"],
-			"ip":  ["8642"],
+			"src":  ["tag:automata"],
+			"dst":  ["tag:automata"],
+			"ip":  ["8642", "9900"],
 		},
 		{
-			"src": ["tag:automata"],
-			"dst": ["tag:automata"],
-			"ip":  ["9900"],
-		},
-		{
-			"src": ["tag:machine"],
-			"dst": ["tag:machine"],
+			"src":  ["tag:machine"],
+			"dst":  ["tag:machine"],
 			"ip":  ["22"],
 		},
 		{
-			"src": ["tag:machine"],
-			"dst": ["tag:inference"],
+			"src":  ["tag:machine"],
+			"dst":  ["tag:authelia", "tag:forgejo", "tag:inference", "tag:lldap", "tag:victoria-logs", "tag:victoria-metrics"],
 			"ip":  ["443"],
 		},
 		{
-			"src": ["tag:machine"],
-			"dst": [
-				"tag:authelia",
-				"tag:forgejo",
-				"tag:lldap",
-				"tag:victoria-logs",
-				"tag:victoria-metrics",
-			],
-			"ip":  ["443"],
-		},
-		{
-			"src": ["tag:automata"],
-			"dst": ["tag:honcho", "tag:matrix", "tag:web"],
-			"ip":  ["443"],
-		},
-		{
-			"src": ["autogroup:member"],
-			"dst": ["tag:blocky"],
+			"src":  ["autogroup:member"],
+			"dst":  ["tag:blocky"],
 			"ip":  ["53"],
 		},
 		{
-			"src": ["tag:machine"],
-			"dst": ["tag:blocky"],
+			"src":  ["tag:machine"],
+			"dst":  ["tag:blocky"],
 			"ip":  ["53"],
 		},
 		{
-			"src": ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
-			"dst": ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
+			"src":  ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
+			"dst":  ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
 			"ip":  ["*"],
-		},
+		}
 	],
 
 	"nodeAttrs": [
