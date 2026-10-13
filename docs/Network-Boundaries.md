@@ -139,9 +139,9 @@ those public nodes, so the tailnet path to them stays usable.
 
 | id            | src                                     | dst              | users         | action | line |
 | ------------- | --------------------------------------- | ---------------- | ------------- | ------ | ---- |
-| `ssh-admin`   | `[autogroup:it-admin, tag:workstation]` | `tag:machine`    | nonroot, root | accept | 273  |
-| `ssh-builder` | `[autogroup:member, tag:machine]`       | `tag:machine`    | builder       | accept | 279  |
-| `ssh-self`    | `autogroup:member`                      | `autogroup:self` | nonroot       | check  | 285  |
+| `ssh-admin`   | `[autogroup:it-admin, tag:workstation]` | `tag:machine`    | nonroot, root | accept | 285  |
+| `ssh-builder` | `[autogroup:member, tag:machine]`       | `tag:machine`    | builder       | accept | 291  |
+| `ssh-self`    | `autogroup:member`                      | `autogroup:self` | nonroot       | check  | 297  |
 
 ### autoApprovers
 
@@ -151,9 +151,9 @@ those public nodes, so the tailnet path to them stays usable.
 
 ### nodeAttrs
 
-- `tag:web` → `funnel` (ingress from the public internet). line 248.
-- `[autogroup:member, tag:machine]` → `drive:share`, `drive:access`. line 252.
-- Three fixed IPs → `mullvad` (exit via Tailscale/Mullvad). lines 256-265.
+- `tag:web` → `funnel` (ingress from the public internet). line 263.
+- `[autogroup:member, tag:machine]` → `drive:share`, `drive:access`. line 267.
+- Three fixed IPs → `mullvad` (exit via Tailscale/Mullvad). lines 271-279.
 
 ## Tag-ownership DAG and blast radius
 
@@ -198,12 +198,12 @@ Blast-radius notes:
 
 Reachable from outside the tailnet:
 
-- **Funnel on four service tags** (line 248) — the only nodeAttrs ingress. The
+- **Funnel on four service tags** (line 263) — the only nodeAttrs ingress. The
   attribute grants those nodes permission to serve Funnel; exposure exists only
   for the ports a Funnel config enables, today the four Funnel Ingresses on
   `:443` (flux-receivers, matrix ×2, copyparty). Keep them to what must be
   public.
-- **Mullvad exit nodes** (lines 256-265) — named IPs route egress through
+- **Mullvad exit nodes** (lines 271-279) — named IPs route egress through
   Mullvad; not an inbound surface.
 - **`autogroup:internet`** (line 65) — members may egress to the internet, not
   an inbound path.
@@ -248,9 +248,9 @@ Audited from the committed `policy.hujson` (no live diff performed here).
 ### Passed invariants
 
 The non-user deny tests encode correct zero-trust backstops:
-`tag:web`→`tag:inference:443` drop (382),
-`tag:k8s-node`→`tag:machine:22` drop (387), `tag:machine`→`tag:workstation`
-A2A drop (395). These hold against the committed grants.
+`tag:web`→`tag:inference:443` drop (449),
+`tag:k8s-node`→`tag:machine:22` drop (454), `tag:machine`→`tag:workstation`
+A2A drop (462). These hold against the committed grants.
 `tag:machine`→`tag:inference:443` was a fourth assertion until the fleet hosts'
 model traffic was measured; it is now a grant.
 
