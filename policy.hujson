@@ -163,12 +163,12 @@
 		{
 			"src":  ["autogroup:member"],
 			"dst":  ["tag:blocky"],
-			"ip":  ["53"],
+			"ip":  ["53", "443"],
 		},
 		{
 			"src":  ["tag:machine"],
 			"dst":  ["tag:blocky"],
-			"ip":  ["53"],
+			"ip":  ["53", "443"],
 		},
 		{
 			"src":  ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
