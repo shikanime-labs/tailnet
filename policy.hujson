@@ -146,6 +146,13 @@
 			"ip":  ["443"],
 		},
 		{
+			// Hermes desktop SSH gateway (automata.i.shikanime.studio) reaching
+			// member devices and workstations over native sshd.
+			"src":  ["tag:automata"],
+			"dst":  ["autogroup:member", "tag:workstation"],
+			"ip":  ["22"],
+		},
+		{
 			"src":  ["tag:automata"],
 			"dst":  ["tag:automata"],
 			"ip":  ["8642", "9900"],
@@ -367,6 +374,12 @@
 			// Pods may not pivot into node SSH.
 			"src":  "tag:k8s-node",
 			"deny": ["tag:machine:22"],
+		},
+		{
+			// The Hermes desktop SSH gateway on automata reaches member
+			// devices (telsha IP stand-in) over native sshd.
+			"src":    "tag:automata",
+			"accept": ["100.118.46.28:22"],
 		},
 		{
 			// Clusters must not initiate A2A into workstations. The merged

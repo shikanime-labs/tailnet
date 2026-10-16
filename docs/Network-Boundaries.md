@@ -131,6 +131,9 @@ those public nodes, so the tailnet path to them stays usable.
 - `automata-inference` — `tag:automata` → `tag:inference:443`. line 200.
 - `automata-automata` — `tag:automata` → `tag:automata:8642` and `:9900`.
   lines 205, 210.
+- `automata-member-ssh` — `tag:automata` → `autogroup:member`,
+  `tag:workstation`:22, the Hermes desktop SSH gateway reaching member
+  devices over native sshd.
 - `machine-machine-ssh` — `tag:machine` → `tag:machine:22`. line 215.
 - `pod-mesh` — `[tag:k8s-node, 10.244.0.0/16, fd00::/108]` → same, ports `*`.
   line 239.
