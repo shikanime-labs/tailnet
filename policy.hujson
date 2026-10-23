@@ -83,7 +83,7 @@
 		{
 			"src":  ["autogroup:it-admin", "tag:workstation"],
 			"dst":  ["autogroup:member", "tag:automata"],
-			"ip":  ["8642", "9119", "9900"],
+			"ip":  ["22", "8642", "9119", "9900"],
 		},
 		{
 			"src":  ["autogroup:it-admin", "tag:workstation"],
@@ -96,7 +96,7 @@
 			"ip":  ["443", "80"],
 		},
 		{
-			"src":  ["autogroup:it-admin", "tag:workstation"],
+			"src":  ["autogroup:it-admin", "tag:machine", "tag:workstation"],
 			"dst":  ["tag:automata", "tag:bazarr", "tag:flux-operator", "tag:flux-receivers", "tag:gitea-mirror", "tag:lidarr", "tag:maintainerr", "tag:metatube", "tag:prowlarr", "tag:syncthing", "tag:telsha-webhook", "tag:whisparr"],
 			"ip":  ["443", "80"],
 		},
@@ -338,7 +338,7 @@
 		{
 			// Admins reach the Automata control plane.
 			"src":    "shikanime.deva@gmail.com",
-			"accept": ["tag:automata:8642", "tag:automata:9900"],
+			"accept": ["tag:automata:22", "tag:automata:8642", "tag:automata:9900"],
 		},
 		{
 			// Admins reach the restricted tier (arr stack, sync, flux, webhook).
