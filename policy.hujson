@@ -228,6 +228,29 @@
 		},
 	],
 
+	"sshTests": [
+		{
+			"src":    "shikanime.deva@gmail.com",
+			"dst":    ["tag:machine", "tag:catbox"],
+			"accept": ["autogroup:nonroot", "root"],
+		},
+		{
+			"src":    "tag:machine",
+			"dst":    ["tag:machine"],
+			"accept": ["builder"],
+		},
+		{
+			"src":    "member.example@shikanime.studio",
+			"dst":    ["member.example@shikanime.studio"],
+			"deny":   ["autogroup:nonroot", "root"],
+		},
+		{
+			"src":    "member.example@shikanime.studio",
+			"dst":    ["tag:catbox"],
+			"deny":   ["root", "autogroup:nonroot", "builder"],
+		},
+	],
+
 	"tagOwners": {
 		"tag:inference":         ["autogroup:it-admin", "tag:k8s-operator"],
 		"tag:machine":           ["autogroup:it-admin"],
