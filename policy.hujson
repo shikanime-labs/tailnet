@@ -211,13 +211,13 @@
 		{
 			"action": "accept",
 			"src":    ["autogroup:it-admin", "tag:workstation"],
-			"dst":    ["tag:machine", "tag:catbox"],
+			"dst":    ["tag:machine"],
 			"users":  ["autogroup:nonroot", "root"],
 		},
 		{
 			"action": "accept",
-			"src":    ["autogroup:member", "tag:machine"],
-			"dst":    ["tag:machine"],
+			"src":    ["autogroup:it-admin", "tag:machine"],
+			"dst":    ["tag:server"],
 			"users":  ["builder"],
 		},
 		{
@@ -231,13 +231,33 @@
 	"sshTests": [
 		{
 			"src":    "shikanime.deva@gmail.com",
-			"dst":    ["tag:machine", "tag:catbox"],
+			"dst":    ["tag:machine"],
 			"accept": ["autogroup:nonroot", "root"],
 		},
 		{
+			"src":    "shikanime.deva@gmail.com",
+			"dst":    ["tag:catbox"],
+			"deny":   ["autogroup:nonroot", "root"],
+		},
+		{
 			"src":    "tag:machine",
-			"dst":    ["tag:machine"],
+			"dst":    ["tag:server"],
 			"accept": ["builder"],
+		},
+		{
+			"src":    "shikanime.deva@gmail.com",
+			"dst":    ["tag:server"],
+			"accept": ["builder"],
+		},
+		{
+			"src":    "tag:machine",
+			"dst":    ["tag:automata"],
+			"deny":   ["builder"],
+		},
+		{
+			"src":    "member.example@shikanime.studio",
+			"dst":    ["tag:machine"],
+			"deny":   ["builder"],
 		},
 		{
 			"src":    "member.example@shikanime.studio",
