@@ -181,7 +181,17 @@
 			"src":  ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
 			"dst":  ["tag:k8s-node", "10.244.0.0/16", "fd00::/108"],
 			"ip":  ["*"],
-		}
+		},
+		{
+			"src":  ["tag:egress"],
+			"dst":  ["tag:authelia", "tag:automata", "tag:bazarr", "tag:blocky", "tag:copyparty", "tag:flux-operator", "tag:flux-receivers", "tag:forgejo", "tag:gitea-mirror", "tag:honcho", "tag:immich", "tag:inference", "tag:jellyfin", "tag:lidarr", "tag:llama-cpp", "tag:lldap", "tag:longhorn", "tag:maintainerr", "tag:matrix", "tag:metatube", "tag:prowlarr", "tag:qbittorrent", "tag:radarr", "tag:seerr", "tag:sonarr", "tag:syncthing", "tag:vaultwarden", "tag:victoria-logs", "tag:victoria-metrics", "tag:web", "tag:whisparr"],
+			"ip":  ["443"],
+		},
+		{
+			"src":  ["tag:egress"],
+			"dst":  ["tag:blocky"],
+			"ip":  ["53"],
+		},
 	],
 
 	"nodeAttrs": [
@@ -280,7 +290,6 @@
 		"tag:k8s-operator":      ["tag:machine"],
 		"tag:automata":          ["tag:machine", "tag:k8s-operator"],
 		"tag:blocky":            ["tag:k8s-operator"],
-		"tag:egress":            ["tag:k8s-operator"],
 		"tag:catbox":            ["tag:k8s-operator"],
 		"tag:web":               ["tag:k8s-operator"],
 		"tag:authelia":             ["tag:k8s-operator"],
@@ -316,6 +325,7 @@
 		"tag:git":               ["tag:k8s-operator"],
 		"tag:ftp":               ["tag:k8s-operator"],
 		"tag:ssh":               ["tag:k8s-operator"],
+		"tag:egress":              ["tag:k8s-operator"],
 	},
 
 	// CI-enforced zero-trust invariants. These deny tests assert that the
@@ -439,6 +449,14 @@
 			"src":    "tag:machine",
 			"accept": ["tag:authelia:443", "tag:lldap:443"],
 			"deny":   ["tag:authelia:9091"],
+		},
+		{
+			"src":    "tag:egress",
+			"accept": ["tag:blocky:443", "tag:blocky:53", "tag:matrix:443", "tag:web:443", "tag:authelia:443"],
+		},
+		{
+			"src":  "tag:egress",
+			"deny": ["tag:machine:22", "tag:k8s-operator:443", "tag:workstation:9900", "tag:authelia:9091"],
 		},
 	],
 }
