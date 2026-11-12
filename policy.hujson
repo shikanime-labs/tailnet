@@ -96,9 +96,14 @@
 			"ip":  ["443", "80"],
 		},
 		{
-			"src":  ["autogroup:it-admin", "tag:machine", "tag:workstation"],
+			"src":  ["autogroup:it-admin", "tag:workstation"],
 			"dst":  ["tag:automata", "tag:bazarr", "tag:flux-operator", "tag:flux-receivers", "tag:gitea-mirror", "tag:lidarr", "tag:maintainerr", "tag:metatube", "tag:prowlarr", "tag:syncthing", "tag:telsha-webhook", "tag:whisparr"],
 			"ip":  ["443", "80"],
+		},
+		{
+			"src":  ["tag:machine"],
+			"dst":  ["tag:automata"],
+			"ip":  ["443"],
 		},
 		{
 			"src":  ["autogroup:it-admin", "tag:workstation"],
@@ -449,6 +454,22 @@
 			"src":    "tag:machine",
 			"accept": ["tag:authelia:443", "tag:lldap:443"],
 			"deny":   ["tag:authelia:9091"],
+		},
+		{
+			// Fleet hosts reach the automata gateway on 443 for a2a only. The
+			// media tier (arr stack) stays with the humans who watch it:
+			// workstations and admins, never the fleet.
+			"src":    "tag:machine",
+			"accept": ["tag:automata:443"],
+			"deny":   [
+				"tag:bazarr:443",
+				"tag:lidarr:443",
+				"tag:maintainerr:443",
+				"tag:metatube:443",
+				"tag:prowlarr:443",
+				"tag:whisparr:443",
+				"tag:syncthing:443",
+			],
 		},
 		{
 			"src":    "tag:egress",
