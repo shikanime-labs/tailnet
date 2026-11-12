@@ -280,6 +280,7 @@
 		"tag:k8s-operator":      ["tag:machine"],
 		"tag:automata":          ["tag:machine", "tag:k8s-operator"],
 		"tag:blocky":            ["tag:k8s-operator"],
+		"tag:egress":            ["tag:k8s-operator"],
 		"tag:catbox":            ["tag:k8s-operator"],
 		"tag:web":               ["tag:k8s-operator"],
 		"tag:authelia":             ["tag:k8s-operator"],
