@@ -147,7 +147,7 @@
 		},
 		{
 			"src":  ["tag:automata"],
-			"dst":  ["tag:honcho", "tag:inference", "tag:matrix", "tag:web"],
+			"dst":  ["tag:honcho", "tag:inference", "tag:matrix", "tag:vaultwarden", "tag:web"],
 			"ip":  ["443"],
 		},
 		{
